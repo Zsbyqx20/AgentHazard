@@ -7,14 +7,27 @@ authors = [
     { name = "Zsbyqx20", email = "112002598+Zsbyqx20@users.noreply.github.com" },
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "aiohttp>=3.11.18",
+    "jinja2>=3.1.6",
+    "pandas>=2.2.3",
+    "pillow>=11.2.1",
+    "pydantic>=2.11.4",
+    "python-dotenv>=1.1.0",
+    "rich>=14.0.0",
+    "structlog>=25.3.0",
+    "tabulate>=0.9.0",
+]
+
+[project.scripts]
+ah = "agenthazard.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["poethepoet>=0.34.0", "ruff>=0.11.10"]
+dev = ["poethepoet>=0.34.0", "pyright>=1.1.401", "ruff>=0.11.10"]
 
 [tool.ruff]
 target-version = "py312"
@@ -26,5 +39,19 @@ preview = true
 preview = true
 
 [tool.poe.tasks]
-format = "uv run ruff format"
-check = "uv run ruff check"
+_ruff_check_format = "ruff format . --check --preview"
+_ruff_check = "ruff check . --preview"
+_pyright = "pyright"
+_ruff_sort_imports = "ruff check --select I --fix . --preview"
+_ruff_format_code = "ruff format . --preview"
+fix = "ruff check --fix . --preview"
+fix_unsafe = "ruff check --preview --fix --unsafe-fixes ."
+export = "uv pip compile pyproject.toml -o requirements.txt"
+
+[[tool.poe.tasks.format]]
+sequence = ['_ruff_sort_imports', '_ruff_format_code']
+ignore_fail = 'return_non_zero'
+
+[[tool.poe.tasks.check]]
+sequence = ['_ruff_check_format', '_ruff_check', '_pyright']
+ignore_fail = 'return_non_zero'
