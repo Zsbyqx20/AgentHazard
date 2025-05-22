@@ -1,0 +1,30 @@
+[project]
+name = "agenthazard"
+version = "0.1.0"
+description = "Hijacking JARVIS: Benchmarking Mobile GUI Agents against Unprivileged Third Parties"
+readme = "README.md"
+authors = [
+    { name = "Zsbyqx20", email = "112002598+Zsbyqx20@users.noreply.github.com" },
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = ["poethepoet>=0.34.0", "ruff>=0.11.10"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+preview = true
+
+[tool.ruff.format]
+preview = true
+
+[tool.poe.tasks]
+format = "uv run ruff format"
+check = "uv run ruff check"
