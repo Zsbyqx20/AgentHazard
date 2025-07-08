@@ -1,9 +1,13 @@
 # Hijacking JARVIS: Benchmarking Mobile GUI Agents against Unprivileged Third Parties
 
+[![arXiv](https://img.shields.io/badge/arXiv-2507.04227-b31b1b.svg)](https://arxiv.org/abs/2507.04227)
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![UV Package Manager](https://img.shields.io/badge/Package%20Manager-UV-green.svg)](https://github.com/astral-sh/uv)
+
 <p align="center">
   <a href="https://agenthazard.github.io">🏠 Project Page</a> |
   <a href="https://github.com/Zsbyqx20/AWAttackerApplier">🛠️ Hijacking Tool</a>  |
-  <a href="https://cloud.tsinghua.edu.cn/f/8a26e3521fbb4047bc36/">📃 Paper</a>
+  <a href="https://arxiv.org/abs/2507.04227">📃 Paper</a>
 </p>
 
 ![intro](assets/pipeline.png)
