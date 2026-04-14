@@ -1,24 +1,23 @@
-# AgentHazard
+<center>
+<h1>Mobile GUI Agents under Real-world Threats: Are We There Yet?</h1>
 
-Static evaluation artifact for the paper _Mobile GUI Agents under Real-world Threats: Are We There Yet?_.
+[![Static Badge](https://img.shields.io/badge/HomePage-green?style=plastic&logo=Homepage&logoColor=white)](https://agenthazard.github.io)
+[![Static Badge](https://img.shields.io/badge/Paper-red?style=plastic&logo=DOI&logoColor=white)](https://doi.org/10.1145/3745756.3809249)
+[![Static Badge](https://img.shields.io/badge/github-Hijacking%20Tool-orange?style=plastic&logo=github)](https://github.com/Zsbyqx20/AWAttackerApplier)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?style=plastic&tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FZsbyqx20%2FAgentHazard%2Frefs%2Fheads%2Fmaster%2Fpyproject.toml&logo=Python&logoColor=white)
+![GitHub Repo stars](https://img.shields.io/github/stars/Zsbyqx20/AgentHazard?style=plastic&logo=github)
+
+![figure](assets/overview.webp)
+</center>
 
 ## What This Repository Contains
 
-This repository reproduces the paper's **static environment** experiments. It evaluates mobile GUI agents on pre-collected scenarios with optional misleading content injected into screenshots at evaluation time.
+This repository reproduces the paper's **static environment** experiments. It evaluates mobile GUI agents on pre-collected scenarios with optional misleading content injected into screenshots at evaluation time. Please refer to our paper for more details and reproduction guide.
 
 Implemented agent backends:
 
-- `m3a`
-- `t3a`
-- `autodroid`
-- `uground`
-
-Implemented API clients:
-
-- `openai`
-- `ark`
-- `azure`
-- `qwen`
+| `m3a` | `t3a` | `autodroid` | `uground` |
+| --- | --- | --- | --- |
 
 ## Repository Layout
 
