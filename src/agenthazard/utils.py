@@ -3,7 +3,8 @@ import json
 import logging
 import os
 import re
-from typing import Awaitable, TypeVar
+from collections.abc import Awaitable
+from typing import TypeVar
 
 import pandas as pd
 from rich.progress import Progress
@@ -26,10 +27,10 @@ async def async_gather_with_progress(
             try:
                 result = await coro
                 results.append(result)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.error("TimeoutError occurred during processing")
             except Exception as e:
-                logger.exception(f"Error occurred during processing: {e}")
+                logger.exception(f"Error occurred during processing: {e}")  # noqa: TRY401
             finally:
                 progress.update(tp, advance=1)
     return results

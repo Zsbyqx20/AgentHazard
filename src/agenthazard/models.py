@@ -1,7 +1,7 @@
 import json
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import structlog
 from PIL import Image, ImageDraw, ImageFont
@@ -69,7 +69,7 @@ class MisleadingConfig(BaseModel):
 class Task(BaseModel):
     description: str
     bbox: BoundingBox
-    misleading_configs: Optional[dict[str, MisleadingConfig]] = None
+    misleading_configs: dict[str, MisleadingConfig] | None = None
 
     def get_misleading_config(self, action: str):
         if self.misleading_configs is None:
@@ -78,35 +78,35 @@ class Task(BaseModel):
 
 
 class UIElement(BaseModel):
-    text: Optional[str] = None
-    content_description: Optional[str] = None
-    class_name: Optional[str] = None
-    bbox: Optional[BoundingBox] = None
-    bbox_pixels: Optional[BoundingBox] = None
-    hint_text: Optional[str] = None
-    is_checked: Optional[bool] = None
-    is_checkable: Optional[bool] = None
-    is_clickable: Optional[bool] = None
-    is_editable: Optional[bool] = None
-    is_enabled: Optional[bool] = None
-    is_focused: Optional[bool] = None
-    is_focusable: Optional[bool] = None
-    is_long_clickable: Optional[bool] = None
-    is_scrollable: Optional[bool] = None
-    is_selected: Optional[bool] = None
-    is_visible: Optional[bool] = None
-    package_name: Optional[str] = None
-    resource_name: Optional[str] = None
-    tooltip: Optional[str] = None
-    resource_id: Optional[str] = None
-    metadata: Optional[dict[str, Any]] = None
+    text: str | None = None
+    content_description: str | None = None
+    class_name: str | None = None
+    bbox: BoundingBox | None = None
+    bbox_pixels: BoundingBox | None = None
+    hint_text: str | None = None
+    is_checked: bool | None = None
+    is_checkable: bool | None = None
+    is_clickable: bool | None = None
+    is_editable: bool | None = None
+    is_enabled: bool | None = None
+    is_focused: bool | None = None
+    is_focusable: bool | None = None
+    is_long_clickable: bool | None = None
+    is_scrollable: bool | None = None
+    is_selected: bool | None = None
+    is_visible: bool | None = None
+    package_name: str | None = None
+    resource_name: str | None = None
+    tooltip: str | None = None
+    resource_id: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class Scenario:
     def __init__(self, root: Path) -> None:
         self.root = root
         self.image = Image.open(self.root / "screenshot.jpg")
-        self.vh = json.load(open(self.root / "original_vh.json"))
+        self.vh = json.load(open(self.root / "original_vh.json"))  # noqa: SIM115
         with open(self.root / "metadata.json", "r") as f:
             metadata = json.load(f)
         self.package = root.parent.name
@@ -116,7 +116,7 @@ class Scenario:
         self.key_element_index = -1
         self.elements: list[UIElement] = []
         for idx, element in enumerate(
-            json.load(open(self.root / "filtered_elements.json"))
+            json.load(open(self.root / "filtered_elements.json"))  # noqa: SIM115
         ):
             self.elements.append(UIElement.model_validate(element))
             if element["text"] == self.text:
@@ -124,9 +124,17 @@ class Scenario:
                 self.key_element_index = idx
         self.colors = ColorData.model_validate(metadata["colors"])
         self.tasks = [Task.model_validate(task) for task in metadata["tasks"]]
+        self.font_path = "assets/NotoSansSC-Regular.ttf"
 
-    def get_marked_screenshot(self, highlight_area: list[BoundingBox] | None = None):
-        image = deepcopy(self.image)
+    def get_marked_screenshot(
+        self,
+        image: Image.Image | None = None,
+        highlight_area: list[BoundingBox] | None = None,
+    ):
+        if image is None:
+            image = deepcopy(self.image)
+        else:
+            image = deepcopy(image)
         draw = ImageDraw.Draw(image)
         if highlight_area is not None:
             for area in highlight_area:
@@ -152,7 +160,7 @@ class Scenario:
 
             # Draw white background rectangle for text
             text = str(cnt)
-            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 16)
+            font = ImageFont.truetype(self.font_path, 16)
             text_bbox = draw.textbbox(
                 (element.bbox_pixels.x_min, element.bbox_pixels.y_min), text, font=font
             )
@@ -177,7 +185,6 @@ class Scenario:
     def get_masked_screenshot(self, adv_str: str):
         image = deepcopy(self.image)
         draw = ImageDraw.Draw(image)
-        font_path = "/usr/share/fonts/truetype/Roboto/static/Roboto-Regular.ttf"
 
         # Draw the background rectangle
         draw.rectangle(
@@ -206,7 +213,7 @@ class Scenario:
 
         while min_size <= max_size:
             current_size = (min_size + max_size) // 2
-            font = ImageFont.truetype(font_path, current_size)
+            font = ImageFont.truetype(self.font_path, current_size)
 
             # Try to wrap text to fit width
             words = adv_str.split()
@@ -245,7 +252,7 @@ class Scenario:
                 max_size = current_size - 1
 
         # Use the best font size found
-        font = ImageFont.truetype(font_path, best_font_size)
+        font = ImageFont.truetype(self.font_path, best_font_size)
 
         # Calculate starting Y position to center the text block vertically
         total_height = 0
@@ -268,7 +275,7 @@ class Scenario:
             draw.text((x, current_y), line, fill=self.colors.text, font=font)
             current_y += line_height * 1.2  # Add 20% line spacing
 
-        return image
+        return self.get_marked_screenshot(image)
 
     def get_masked_elements(self, adv_str: str):
         elements = deepcopy(self.elements)

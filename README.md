@@ -1,144 +1,110 @@
-# Hijacking JARVIS: Benchmarking Mobile GUI Agents against Unprivileged Third Parties
+# AgentHazard
 
-[![arXiv](https://img.shields.io/badge/arXiv-2507.04227-b31b1b.svg)](https://arxiv.org/abs/2507.04227)
-[![Python 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![UV Package Manager](https://img.shields.io/badge/Package%20Manager-UV-green.svg)](https://github.com/astral-sh/uv)
+Static evaluation artifact for the paper _Mobile GUI Agents under Real-world Threats: Are We There Yet?_.
 
-<p align="center">
-  <a href="https://agenthazard.github.io">🏠 Project Page</a> |
-  <a href="https://github.com/Zsbyqx20/AWAttackerApplier">🛠️ Hijacking Tool</a>  |
-  <a href="https://arxiv.org/abs/2507.04227">📃 Paper</a>
-</p>
+## What This Repository Contains
 
-![intro](assets/pipeline.png)
+This repository reproduces the paper's **static environment** experiments. It evaluates mobile GUI agents on pre-collected scenarios with optional misleading content injected into screenshots at evaluation time.
 
-> This repository contains code & data for the paper: "Hijacking JARVIS:
-> Benchmarking Mobile GUI Agents against Unprivileged Third Parties".
+Implemented agent backends:
 
-## ⚙️ Project Setup
+- `m3a`
+- `t3a`
+- `autodroid`
+- `uground`
 
-Please clone the project first.
+Implemented API clients:
 
-```bash
-$ git clone https://github.com/Zsbyqx20/AgentHazard.git
-```
+- `openai`
+- `ark`
+- `azure`
+- `qwen`
 
-### Virtual Environment
+## Repository Layout
 
-It is recommended to use [uv](https://docs.astral.sh/uv/) for setting up the
-dependencies of this project.
+- `src/agenthazard/cli/` — evaluation CLI
+- `src/agenthazard/agent/` — agent prompting and output parsing
+- `src/agenthazard/api/` — OpenAI-compatible async API clients
+- `src/agenthazard/models.py` — scenario, task, UI element, and attack models
+- `src/agenthazard/dataset.py` — dataset loader
+- `scripts/` — convenience scripts for baseline and attack runs
 
-```bash
-$ uv sync --no-dev
-```
+## Setup
 
-It is also okay to use your preferred dependency manager through
-`requirements.txt`.
+1. Install dependencies:
 
-```bash
-$ pip install -r requirements.txt
-```
+   ```bash
+   uv sync --dev
+   ```
 
-### Data Download
+2. Prepare the dataset under `data/`. The evaluator expects scenario folders containing:
 
-You can get access to our dynamic & static dataset through this
-[link](https://cloud.tsinghua.edu.cn/f/392e8053a8a5494a8afb/?dl=1), or the
-commands below:
+   - `metadata.json`
+   - `screenshot.jpg`
+   - `original_vh.json`
+   - `filtered_elements.json`
 
-```bash
-$ wget "https://cloud.tsinghua.edu.cn/f/392e8053a8a5494a8afb/?dl=1" -O data.tar.gz
-$ mv data.tar.gz /path/to/the/repository
-$ tar xzf data.tar.gz
-```
+3. Copy the env template and configure API access:
 
-After decompress the file, please ensure the structure of the folders:
+   ```bash
+   cp .env.local .env
+   ```
 
-```
-├── data
-│   ├── dynamic
-│   └── static
-└── src
-    └── agenthazard
-        └── ...
-```
+   Set at least:
 
-## 📈 Run Evaluations
+   - `OPENAI_API_KEY`
+   - `OPENAI_BASE_URL`
 
-### Dynamic Dataset
+   For UGround-based experiments, also set:
 
-We use jinja template to manage and generate configurations for the
-[hijacking tool](https://github.com/Zsbyqx20/AWAttackerApplier). Please download
-the latest release and install it on your AVD.
+   - `UG_API_KEY`
+   - `UG_BASE_URL`
 
-In order to convert the jinja files into JSON files, just run:
+## Usage
+
+Show the CLI help:
 
 ```bash
-# if you are using uv
-$ ah generate
-
-# if you are using other dependency manager
-$ python -m agenthazard.cli generate
+uv run python -m agenthazard.cli eval --help
 ```
 
-After that, please clone our customized Android World repository, and put the
-generated JSON files into the `config` folder.
-
-> Here the `config` folder refers to `AndroidWorld` instead of the current
-> repository.
+Run a baseline evaluation:
 
 ```bash
-$ git clone https://github.com/Zsbyqx20/android_world.git
+uv run python -m agenthazard.cli eval \
+  --data-dir data \
+  --agent m3a \
+  --client openai \
+  --model gpt-4o-2024-11-20 \
+  -o static_results/results-agent_m3a_model_gpt-4o-2024-11-20_baseline.parquet
 ```
 
-You need to follow the instructions of Android World to set up environments and
-AVDs. Here is an example.
+Run an attack evaluation:
 
 ```bash
-python run.py \
-  --suite_family=android_world \
-  --agent_name=t3a_gpt4 \
-  --perform_emulator_setup \
-  --tasks=ContactsAddContact,ClockStopWatchRunning \
-  --attack_config config/xxxxx.json \ # specify the configuration path here
-  --break_on_misleading_actions # if specified, the program will quit when a misleading action is detected.
+uv run python -m agenthazard.cli eval \
+  --data-dir data \
+  --agent m3a \
+  --client openai \
+  --model gpt-4o-2024-11-20 \
+  --attack click \
+  -o static_results/results-agent_m3a_model_gpt-4o-2024-11-20_attack_click.parquet
 ```
 
-> Note: to keep the consistency among all runs, we recommend you to save a
-> checkpoint after you just finishing configurations of a fresh AVD. Refer to
-> the `eval` folder under the Android World project to check more details on how
-> to automatically run evaluations. We provide a solution on robust mechanisms
-> including automatic reloading states when meeting an error and restarting AVDs
-> if needed.
-
-### Static Dataset
-
-The static part of our dataset is under the `data/static/` folder. Each scenario
-contains 4 files, namely `screenshot.jpg`, `filtered_elements.json`,
-`metadata.json`, and `original_vh.json`. The detailed logic can be found at
-`src/agenthazard/dataset.py`.
-
-For evaluation, you are required to set your API key in the `.env` file. You may
-refer to `.env.local` file as an example, and refer to
-`src/agenthazard/api/client` for more clients available, or customizing your own
-LLM client.
-
-```env
-OPENAI_API_KEY=sk-xxxx
-OPENAI_BASE_URL=https://xxxx.com
-```
-
-We provide convenient evaluation entries through the `eval` command:
+Batch scripts:
 
 ```bash
-# if you are using uv
-$ ah eval --help 
-
-# if you are using other dependency manager
-$ python -m agenthazard.cli eval --help
+chmod +x scripts/*.sh
+./scripts/eval-baseline.sh
+./scripts/eval-attacks.sh
 ```
 
-For each modality of the agent, we choose M3A, T3A and UGround (to be released)
-to implement for evaluation logic. We support to choose from different agents,
-different LLMs, as well as different misleading actions as settings.
+Results are stored as parquet files and support resume by default.
 
-Please check our paper for more details.
+## Validation
+
+Run the repository checks with:
+
+```bash
+uv run poe check
+```

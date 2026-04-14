@@ -58,5 +58,4 @@ class AgentHazardDataset:
 
     def __iter__(self):
         for scenarios in self.scenarios.values():
-            for scenario in scenarios.values():
-                yield scenario
+            yield from scenarios.values()

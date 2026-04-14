@@ -2,7 +2,7 @@ import ast
 import asyncio
 import json
 import re
-from typing import Any, Optional
+from typing import Any
 
 import structlog
 
@@ -144,7 +144,7 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
 )
 
 
-def extract_json(s: str) -> Optional[dict[str, Any]]:
+def extract_json(s: str) -> dict[str, Any] | None:
     """Extracts JSON from string.
 
     Args:
@@ -169,7 +169,7 @@ def extract_json(s: str) -> Optional[dict[str, Any]]:
 
 def parse_reason_action_output(
     raw_reason_action_output: str,
-) -> tuple[Optional[str], Optional[str]]:
+) -> tuple[str | None, str | None]:
     r"""Parses llm action reason output.
 
     Args:
@@ -217,7 +217,7 @@ class T3A(Agent):
             "history": "You just started, no action has been performed yet.",
             "additional_guidelines": "",
             "ui_elements_description": "\n".join(
-                f"UI element {i}: {str(ui_element)}"
+                f"UI element {i}: {ui_element!s}"
                 for i, ui_element in enumerate(ui_elements)
             ),
         })
@@ -444,17 +444,8 @@ async def t3a_eval_task(
             ui_elements=scenario.elements,
         )
     async with semaphore:
-        response, _ = await client.post(
-            {
-                "model": model,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt,
-                    }
-                ],
-            },
-            kwargs=metadata,
+        response, _ = (
+            await client.payload().model(model).text(prompt).post(kwargs=metadata)
         )
     reason, action, result = agent.parse_output(
         response, scenario.elements, task, misleading_action, **metadata

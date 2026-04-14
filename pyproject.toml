@@ -1,42 +1,33 @@
 [project]
 name = "agenthazard"
 version = "0.1.0"
-description = "Hijacking JARVIS: Benchmarking Mobile GUI Agents against Unprivileged Third Parties"
+description = "Source code for Paper: Mobile GUI Agents under Real-world Threats: Are We There Yet?"
 readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.13.3",
+    "click>=8.3.1",
+    "pandas>=3.0.1",
+    "pillow>=12.1.1",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.2",
+    "rich>=14.3.3",
+    "structlog>=25.5.0",
+    "tabulate>=0.10.0",
+]
 authors = [
     { name = "Zsbyqx20", email = "112002598+Zsbyqx20@users.noreply.github.com" },
 ]
-requires-python = ">=3.12"
-dependencies = [
-    "aiohttp>=3.11.18",
-    "jinja2>=3.1.6",
-    "pandas>=2.2.3",
-    "pillow>=11.2.1",
-    "pydantic>=2.11.4",
-    "python-dotenv>=1.1.0",
-    "rich>=14.0.0",
-    "structlog>=25.3.0",
-    "tabulate>=0.9.0",
-]
-
-[project.scripts]
-ah = "agenthazard.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[dependency-groups]
-dev = ["poethepoet>=0.34.0", "pyright>=1.1.401", "ruff>=0.11.10"]
+[project.scripts]
+ah = "agenthazard.cli:main"
 
-[tool.ruff]
-target-version = "py312"
-
-[tool.ruff.lint]
-preview = true
-
-[tool.ruff.format]
-preview = true
+[tool.pyright]
+include = ["src/agenthazard"]
 
 [tool.poe.tasks]
 _ruff_check_format = "ruff format . --check --preview"
@@ -55,3 +46,10 @@ ignore_fail = 'return_non_zero'
 [[tool.poe.tasks.check]]
 sequence = ['_ruff_check_format', '_ruff_check', '_pyright']
 ignore_fail = 'return_non_zero'
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.42.1",
+    "pyright>=1.1.408",
+    "ruff>=0.15.6",
+]

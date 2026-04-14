@@ -25,7 +25,7 @@ def rich_style_wrapper(src: Any, style: str) -> str:
     """
     if style == "":
         return str(src)
-    return f"[{style}]{str(src)}[/]"
+    return f"[{style}]{src!s}[/]"
 
 
 def rich_style_format_parser(

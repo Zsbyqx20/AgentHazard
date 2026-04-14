@@ -1,8 +1,4 @@
-def main_entry_point():
-    from . import main
-
-    main()
-
+from . import cli
 
 if __name__ == "__main__":
-    main_entry_point()
+    cli()

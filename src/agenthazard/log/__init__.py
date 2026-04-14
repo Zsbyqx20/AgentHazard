@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
@@ -28,7 +28,7 @@ def default_logging_setup(
             if filename_add_timestamp:
                 filename = str(
                     path_filename.with_stem(
-                        f"{path_filename.stem}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                        f"{path_filename.stem}_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
                     ).with_suffix(path_filename.suffix)
                 )
 

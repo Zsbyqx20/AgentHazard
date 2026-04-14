@@ -1,18 +1,19 @@
 import ast
 import asyncio
-import base64
 import json
 import re
-from typing import Any, Optional
+from typing import Any
 
 import structlog
+from dotenv import load_dotenv
 
-from ..api.base import AsyncClient
+from ..api import AsyncClient
 from ..models import EvalResult, Scenario, Task, UIElement
 from .base import Agent
 from .utils import JSONAction, generate_ui_element_description
 
 logger = structlog.get_logger(__name__)
+load_dotenv()
 
 PROMPT_PREFIX = (
     "You are an agent who can operate an Android phone on behalf of a user."
@@ -157,7 +158,7 @@ ACTION_SELECTION_PROMPT_TEMPLATE = (
 )
 
 
-def extract_json(s: str) -> Optional[dict[str, Any]]:
+def extract_json(s: str) -> dict[str, Any] | None:
     """Extracts JSON from string.
 
     Args:
@@ -182,7 +183,7 @@ def extract_json(s: str) -> Optional[dict[str, Any]]:
 
 def parse_reason_action_output(
     raw_reason_action_output: str,
-) -> tuple[Optional[str], Optional[str]]:
+) -> tuple[str | None, str | None]:
     r"""Parses llm action reason output.
 
     Args:
@@ -249,6 +250,13 @@ class M3A(Agent):
         action = JSONAction(action_type="status", goal_status="infeasible")
 
         if reason and tmp_action:
+            logger.debug(
+                "Parsing action",
+                output=output,
+                reason=reason,
+                action=tmp_action,
+                **metadata,
+            )
             try:
                 converted_action = JSONAction(**extract_json(tmp_action))  # type: ignore
                 action_index = converted_action.index
@@ -459,25 +467,13 @@ async def m3a_eval_task(
         )
         image = scenario.get_marked_screenshot()
     async with semaphore:
-        response, _ = await client.post(
-            {
-                "model": model,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:image/jpeg;base64,{base64.b64encode(image.tobytes()).decode()}"
-                                },
-                            },
-                        ],
-                    },
-                ],
-            },
-            kwargs=metadata,
+        response, _ = (
+            await client
+            .payload()
+            .model(model)
+            .text(prompt)
+            .image(image)
+            .post(kwargs=metadata)
         )
     reason, action, result = agent.parse_output(
         response, scenario.elements, task, misleading_action, **metadata

@@ -2,7 +2,7 @@ import ast
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -147,7 +147,7 @@ def mark_image(
         outline="red",
         width=2,
     )
-    font = ImageFont.truetype("DejaVuSans-Bold.ttf", 18)
+    font = ImageFont.truetype("assets/NotoSansSC-Regular.ttf", 18)
     if index is not None:
         draw.text((bbox.x_min, bbox.y_min), str(index), fill="white", font=font)
     return image
@@ -178,22 +178,22 @@ class JSONAction:
         the interface.
     """
 
-    action_type: Optional[str] = None
-    index: Optional[str | int] = None
-    x: Optional[int] = None
-    y: Optional[int] = None
-    text: Optional[str] = None
-    direction: Optional[str] = None
-    goal_status: Optional[str] = None
-    app_name: Optional[str] = None
-    keycode: Optional[str] = None
+    action_type: str | None = None
+    index: str | int | None = None
+    x: int | None = None
+    y: int | None = None
+    text: str | None = None
+    direction: str | None = None
+    goal_status: str | None = None
+    app_name: str | None = None
+    keycode: str | None = None
 
     # for aria-UI
-    target: Optional[str] = None
-    instruction: Optional[str] = None
-    coords: Optional[tuple[int, int]] = None
+    target: str | None = None
+    instruction: str | None = None
+    coords: tuple[int, int] | None = None
     # for aria and UGround
-    element: Optional[str] = None
+    element: str | None = None
 
     def __post_init__(self):
         if self.action_type not in _ACTION_TYPES:
