@@ -1,8 +1,10 @@
-<center>
 <h1>Mobile GUI Agents under Real-world Threats: Are We There Yet?</h1>
 
+<center>
+
 [![Static Badge](https://img.shields.io/badge/HomePage-green?style=plastic&logo=Homepage&logoColor=white)](https://agenthazard.github.io)
-[![Static Badge](https://img.shields.io/badge/Paper-red?style=plastic&logo=DOI&logoColor=white)](https://doi.org/10.1145/3745756.3809249)
+[![Static Badge](https://img.shields.io/badge/Paper-yellow?style=plastic&logo=DOI&logoColor=white)](https://doi.org/10.1145/3745756.3809249)
+[![arXiv](https://img.shields.io/badge/arXiv-2507.04227-b31b1b.svg?style=plastic)](https://arxiv.org/abs/2507.04227)
 [![Static Badge](https://img.shields.io/badge/github-Hijacking%20Tool-orange?style=plastic&logo=github)](https://github.com/Zsbyqx20/AWAttackerApplier)
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?style=plastic&tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FZsbyqx20%2FAgentHazard%2Frefs%2Fheads%2Fmaster%2Fpyproject.toml&logo=Python&logoColor=white)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Zsbyqx20/AgentHazard?style=plastic&logo=github)
