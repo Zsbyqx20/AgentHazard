@@ -14,7 +14,7 @@
 
 ## What This Repository Contains
 
-This repository reproduces the paper's **static environment** experiments. It evaluates mobile GUI agents on pre-collected scenarios with optional misleading content injected into screenshots at evaluation time. Please refer to our paper for more details and reproduction guide.
+This repository reproduces the paper's **static environment** experiments. It evaluates mobile GUI agents on pre-collected scenarios with optional misleading content injected into screenshots at evaluation time. Please refer to our paper (**Appendix A**) for more details and reproduction guide.
 
 Implemented agent backends:
 
@@ -38,7 +38,7 @@ Implemented agent backends:
    uv sync --dev
    ```
 
-2. Prepare the dataset under `data/`. The evaluator expects scenario folders containing:
+2. Prepare the dataset under `data/` (available at [here](https://cloud.tsinghua.edu.cn/d/48ff830c185742b38c52/)). The evaluator expects scenario folders containing:
 
    - `metadata.json`
    - `screenshot.jpg`
